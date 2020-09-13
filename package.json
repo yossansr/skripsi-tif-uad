@@ -1,13 +1,22 @@
 {
   "name": "skripsi-tif-uad",
   "version": "0.1.0",
+  "proxy": "http://localhost:4444",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^4.2.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "antd": "^4.6.2",
+    "ra-data-json-server": "^3.8.4",
+    "ra-data-simple-rest": "^3.8.3",
     "react": "^16.13.1",
+    "react-admin": "^3.8.4",
     "react-dom": "^16.13.1",
+    "react-pdf": "^5.0.0",
+    "react-query": "^2.15.4",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3"
   },
   "scripts": {
@@ -30,5 +39,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-react": "^7.20.6",
+    "eslint-plugin-react-hooks": "^4.1.0"
   }
 }
