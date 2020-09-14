@@ -6,20 +6,14 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { AuthContext } from '../../App';
 import './Login.styles.css';
 import parseJwt from '../../utils/parseJwt';
+import fetchAPI from '../../utils/fetchAPI';
 
 export default function Login() {
   const [form] = Form.useForm();
   const { dispatch } = React.useContext(AuthContext);
 
   const onFinish = ({ email, password }) => {
-    fetch('http://localhost:4444/student/login', {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    }).then((res) => res.json()).catch(() => Promise.reject())
+    fetchAPI('/student/login', {}, 'POST', { email, password })
       .then((resJson) => {
         const decode = parseJwt(resJson.data.access_token);
         dispatch({
@@ -31,6 +25,7 @@ export default function Login() {
         });
       });
   };
+
   return (
     <Form form={form} layout="vertical" style={{ textAlign: 'center' }} onFinish={onFinish}>
       <Form.Item
