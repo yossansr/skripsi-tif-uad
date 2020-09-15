@@ -19,10 +19,9 @@ export default function AuthenticatedLink({ url, filename, children }) {
     const blob = await result.blob();
     const href = window.URL.createObjectURL(blob);
 
-    link.current.download = filename;
     link.current.href = href;
 
-    link.current.click();
+    window.open(link.current);
   };
 
   return (
