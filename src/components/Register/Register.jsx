@@ -1,88 +1,81 @@
 /* eslint-disable import/no-cycle */
 import React from 'react';
 import {
-  Form, Input, Button, Select,
+  Form, Input, Button, Select, message,
 } from 'antd';
 import { useQuery } from 'react-query';
 import { AuthContext } from '../../App';
-
-const fetchLecturers = async () => {
-  const res = await fetch('http://localhost:4444/lecturer');
-  return res.json();
-};
-
-const fetchStudents = async () => {
-  const res = await fetch('http://localhost:4444/student');
-  return res.json();
-};
+import fetchAPI from '../../utils/fetchAPI';
 
 export default function Register() {
   const { dispatch } = React.useContext(AuthContext);
   const [form] = Form.useForm();
-  const { data: lecturers, status: lecturerStatus } = useQuery('lecturers', fetchLecturers);
+  const { data: lecturers, status: lecturerStatus } = useQuery(
+    'lecturers',
+    () => fetchAPI('/lecturer'),
+  );
   const [studentsEmail, setStudentsEmail] = React.useState([]);
 
   React.useEffect(() => {
-    const fetchAPI = async () => {
-      const students = await fetchStudents();
+    const fetchData = async () => {
+      const students = await fetchAPI('/student');
       setStudentsEmail(
-        students
-          ? students.data.map((student) => student.email)
-          : [],
+        students ? students.data.map((student) => student.email) : [],
       );
     };
-    fetchAPI();
+    fetchData();
   }, []);
 
   const onFinish = ({
     email, lecturer, name, password,
   }) => {
-    fetch('http://localhost:4444/student', {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        lecturer: {
-          id: lecturer,
+    fetchAPI('/student', {}, 'POST', {
+      email,
+      lecturer: {
+        id: lecturer,
+      },
+      name,
+      password,
+    }).then((res) => (res.status === 'ok'
+      ? fetchAPI('/student/login', {}, 'POST', { email, password }).then(
+        (resJson) => {
+          dispatch({
+            type: 'LOGIN',
+            payload: resJson,
+          });
         },
-        name,
-        password,
-      }),
-    }).then(fetch('http://localhost:4444/student/login', {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    }).then((res) => res.json())
-      .then((resJson) => {
-        dispatch({
-          type: 'LOGIN',
-          payload: resJson,
-        });
-      }));
+      )
+      : message.error('Something went wrong')));
   };
 
   return (
-
-    <Form layout="vertical" form={form} validateTrigger="onBlur" name="register" style={{ textAlign: 'center' }} onFinish={onFinish}>
-      <Form.Item name="name" hasFeedback label="Nama Lengkap" rules={[{ required: true, message: 'Mohon masukkan nama anda' }]}>
+    <Form
+      layout="vertical"
+      form={form}
+      validateTrigger="onBlur"
+      name="register"
+      style={{ textAlign: 'center' }}
+      onFinish={onFinish}
+    >
+      <Form.Item
+        name="name"
+        hasFeedback
+        label="Nama Lengkap"
+        rules={[{ required: true, message: 'Mohon masukkan nama anda' }]}
+      >
         <Input />
       </Form.Item>
-      <Form.Item label="Select" name="lecturer">
+      <Form.Item label="Dosen" name="lecturer">
         <Select>
-          {
-            lecturerStatus === 'success' && lecturers.data.map((lecturer) => (
+          {lecturerStatus === 'success'
+            && lecturers.data.map((lecturer) => (
               <Select.Option value={lecturer.id} key={lecturer.id}>
                 {lecturer.name}
                 {' '}
                 -
-                {' '}
                 {lecturer.nip}
               </Select.Option>
-            ))
-          }
+            ))}
         </Select>
       </Form.Item>
       <Form.Item
@@ -98,7 +91,11 @@ export default function Register() {
             required: true,
             message: 'Mohon masukkan Email anda',
           },
-          { validator: (rule, value, callback) => (studentsEmail.includes(value) ? callback('Email sudah terdaftar, silahkan login') : callback()) },
+          {
+            validator: (rule, value, callback) => (studentsEmail.includes(value)
+              ? callback('Email sudah terdaftar, silahkan login')
+              : callback()),
+          },
         ]}
       >
         <Input />
@@ -132,7 +129,9 @@ export default function Register() {
               if (!value || getFieldValue('password') === value) {
                 return Promise.resolve();
               }
-              return Promise.reject(new Error('The two passwords that you entered do not match!'));
+              return Promise.reject(
+                new Error('The two passwords that you entered do not match!'),
+              );
             },
           }),
         ]}
