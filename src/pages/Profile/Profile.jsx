@@ -36,12 +36,14 @@ export default function Profile() {
       },
       name: values.name,
       password: values.password,
-    });
+    }).then((res) => (res.status === 'ok' ? message.success(
+      'Profile Updated',
+    ) : message.error('Profile not updated')));
 
     fetchAPI(`/student/${userId}/thesis`, { token }, thesisMethod, {
       title: values.title,
-    }).then((res) => (res.status === 200 ? message.success(
-      'Profile Updated',
+    }).then((res) => (res.status === 'ok' ? message.success(
+      'Thesis Updated',
     ) : message.error('Something went wrong')));
   };
 
