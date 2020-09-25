@@ -1,6 +1,8 @@
 /* eslint-disable import/no-cycle */
 import React from 'react';
-import { Form, Input, Button } from 'antd';
+import {
+  Form, Input, Button, message,
+} from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
 import { AuthContext } from '../../App';
@@ -15,14 +17,17 @@ export default function Login() {
   const onFinish = ({ email, password }) => {
     fetchAPI('/student/login', {}, 'POST', { email, password })
       .then((resJson) => {
-        const decode = parseJwt(resJson.data.access_token);
-        dispatch({
-          type: 'LOGIN',
-          payload: {
-            userId: decode.id,
-            token: resJson.data.access_token,
-          },
-        });
+        if (resJson.status === 'error') message.error('Wrong Credentials');
+        else {
+          const decode = parseJwt(resJson.data.access_token);
+          dispatch({
+            type: 'LOGIN',
+            payload: {
+              userId: decode.id,
+              token: resJson.data.access_token,
+            },
+          });
+        }
       });
   };
 
