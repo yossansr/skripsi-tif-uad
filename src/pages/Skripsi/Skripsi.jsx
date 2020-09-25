@@ -64,7 +64,7 @@ export default function Skripsi() {
   const { isLoading: isLoadingThesis, data: thesisAll } = useQuery('thesis', () => fetchAPI(`/student/${userId}/thesis/all`, { token }).then((res) => res.data), {
     onSuccess: (newData) => setData(columns.map((column, index) => ({
       ...column,
-      file: newData[Object.keys(newData)[index]] ? <AuthenticatedLink filename={`${column.key}.pdf`} url={`/student/${userId}/thesis/${column.key}`}>{`${column.key}.pdf`}</AuthenticatedLink> : 'kosong',
+      file: newData[Object.keys(newData)[index]] ? <AuthenticatedLink url={`/student/${userId}/thesis/${column.key}`}>{`${column.key}.pdf`}</AuthenticatedLink> : 'kosong',
     }))),
   });
 
@@ -102,7 +102,7 @@ export default function Skripsi() {
                     onChange={(info) => {
                       if (info.file.status === 'done') {
                         message.success(`${info.file.name} file uploaded successfully`);
-                        setData([...data, data[index].file = <AuthenticatedLink filename={`${record.key}.pdf`} url={`/student/${userId}/thesis/${record.key}`}>{`${record.key}.pdf`}</AuthenticatedLink>]);
+                        setData([...data, data[index].file = <AuthenticatedLink url={`/student/${userId}/thesis/${record.key}`}>{`${record.key}.pdf`}</AuthenticatedLink>]);
                       } else if (info.file.status === 'error') {
                         message.error(`${info.file.name} file upload failed.`);
                       }
