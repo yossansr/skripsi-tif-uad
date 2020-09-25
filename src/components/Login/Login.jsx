@@ -5,27 +5,22 @@ import {
 } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
-import { AuthContext } from '../../App';
 import './Login.styles.css';
-import parseJwt from '../../utils/parseJwt';
 import fetchAPI from '../../utils/fetchAPI';
+import { UserContext } from '../../contexts/User/UserContext';
 
 export default function Login() {
   const [form] = Form.useForm();
-  const { dispatch } = React.useContext(AuthContext);
+  const { dispatch } = React.useContext(UserContext);
 
   const onFinish = ({ email, password }) => {
     fetchAPI('/student/login', {}, 'POST', { email, password })
       .then((resJson) => {
         if (resJson.status === 'error') message.error('Wrong Credentials');
         else {
-          const decode = parseJwt(resJson.data.access_token);
           dispatch({
             type: 'LOGIN',
-            payload: {
-              userId: decode.id,
-              token: resJson.data.access_token,
-            },
+            payload: { token: resJson.data.access_token },
           });
         }
       });

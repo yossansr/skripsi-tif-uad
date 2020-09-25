@@ -4,11 +4,11 @@ import {
   Form, Input, Button, Select, message,
 } from 'antd';
 import { useQuery } from 'react-query';
-import { AuthContext } from '../../App';
 import fetchAPI from '../../utils/fetchAPI';
+import { UserContext } from '../../contexts/User/UserContext';
 
 export default function Register() {
-  const { dispatch } = React.useContext(AuthContext);
+  const { dispatch } = React.useContext(UserContext);
   const [form] = Form.useForm();
   const { data: lecturers, status: lecturerStatus } = useQuery(
     'lecturers',
@@ -41,7 +41,7 @@ export default function Register() {
         (resJson) => {
           dispatch({
             type: 'LOGIN',
-            payload: resJson,
+            payload: { token: resJson.data.access_token },
           });
         },
       )
