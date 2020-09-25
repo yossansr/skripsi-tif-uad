@@ -65,7 +65,7 @@ const Sidebar = () => {
         <Content style={{ margin: '24px 16px 0' }}>
           <div
             className="site-layout-background"
-            style={{ padding: 24, minHeight: '89vh' }}
+            style={{ padding: 24, minHeight: '89vh', background: '#fff' }}
           >
             <Switch>
               <PrivateRoute exact path="/" component={Home} />
