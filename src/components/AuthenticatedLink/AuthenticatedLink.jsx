@@ -4,7 +4,7 @@
 /* eslint-disable react/prop-types */
 import React, { createRef } from 'react';
 
-export default function AuthenticatedLink({ url, filename, children }) {
+export default function AuthenticatedLink({ url, children }) {
   const link = createRef();
   const baseUrl = 'http://localhost:4444';
   const token = localStorage.getItem('token');
