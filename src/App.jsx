@@ -59,7 +59,7 @@ const App = () => {
         <Route exact path="/admin" component={AdminPage} />
         <PublicRoute restricted exact path="/form" component={Form} />
       </Switch>
-      <Layout>
+      <Layout style={state.isAuthenticated ? {} : { display: 'none' }}>
         <Sider
           breakpoint="lg"
           collapsedWidth="0"
