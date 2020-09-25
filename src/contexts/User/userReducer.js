@@ -1,12 +1,15 @@
+import parseJwt from '../../utils/parseJwt';
+
 const userReducer = (state, action) => {
+  let decode = '';
+
   switch (action.type) {
     case 'LOGIN':
-      localStorage.setItem('userId', action.payload.userId);
-      localStorage.setItem('token', action.payload.token);
+      decode = parseJwt(action.payload.token);
       return {
         ...state,
         isAuthenticated: true,
-        userId: action.payload.userId,
+        userId: decode.id,
         token: action.payload.token,
       };
     case 'LOGOUT':
