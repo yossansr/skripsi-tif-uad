@@ -10,12 +10,12 @@ import AuthenticatedLink from '../../components/AuthenticatedLink/AuthenticatedL
 
 import './Skripsi.styles.css';
 import fetchAPI from '../../utils/fetchAPI';
+import { UserContext } from '../../contexts/User/UserContext';
 
 const { Column } = Table;
 
 export default function Skripsi() {
-  const userId = localStorage.getItem('userId') || null;
-  const token = localStorage.getItem('token') || null;
+  const { state } = React.useContext(UserContext);
   const [data, setData] = React.useState([]);
 
   const columns = [
@@ -61,17 +61,17 @@ export default function Skripsi() {
     },
   ];
 
-  const { isLoading: isLoadingThesis, data: thesisAll } = useQuery('thesis', () => fetchAPI(`/student/${userId}/thesis/all`, { token }).then((res) => res.data), {
+  const { isLoading: isLoadingThesis, data: thesisAll } = useQuery('thesisAll', () => fetchAPI(`/student/${state.userId}/thesis/all`, { token: state.token }).then((res) => res.data), {
     onSuccess: (newData) => setData(columns.map((column, index) => ({
       ...column,
-      file: newData[Object.keys(newData)[index]] ? <AuthenticatedLink url={`/student/${userId}/thesis/${column.key}`}>{`${column.key}.pdf`}</AuthenticatedLink> : 'kosong',
+      file: newData[Object.keys(newData)[index]] ? <AuthenticatedLink url={`/student/${state.userId}/thesis/${column.key}`}>{`${column.key}.pdf`}</AuthenticatedLink> : 'kosong',
     }))),
   });
 
   const props = {
     name: 'file',
     headers: {
-      token,
+      token: state.token,
     },
   };
 
@@ -97,12 +97,12 @@ export default function Skripsi() {
                 (
                   <Upload
                     {...props}
-                    action={`http://localhost:4444/student/${userId}/thesis/${record.key}`}
+                    action={`http://localhost:4444/student/${state.userId}/thesis/${record.key}`}
                     showUploadList={false}
                     onChange={(info) => {
                       if (info.file.status === 'done') {
                         message.success(`${info.file.name} file uploaded successfully`);
-                        setData([...data, data[index].file = <AuthenticatedLink url={`/student/${userId}/thesis/${record.key}`}>{`${record.key}.pdf`}</AuthenticatedLink>]);
+                        setData([...data, data[index].file = <AuthenticatedLink url={`/student/${state.userId}/thesis/${record.key}`}>{`${record.key}.pdf`}</AuthenticatedLink>]);
                       } else if (info.file.status === 'error') {
                         message.error(`${info.file.name} file upload failed.`);
                       }
@@ -115,12 +115,12 @@ export default function Skripsi() {
                 <>
                   <Upload
                     {...props}
-                    action={`http://localhost:4444/student/${userId}/thesis/${record.key}`}
+                    action={`http://localhost:4444/student/${state.userId}/thesis/${record.key}`}
                     showUploadList={false}
                     onChange={(info) => {
                       if (info.file.status === 'done') {
                         message.success(`${info.file.name} file uploaded successfully`);
-                        setData([...data, data[index].file = <AuthenticatedLink filename={`${record.key}.pdf`} url={`/student/${userId}/thesis/${record.key}`}>{`${record.key}.pdf`}</AuthenticatedLink>]);
+                        setData([...data, data[index].file = <AuthenticatedLink filename={`${record.key}.pdf`} url={`/student/${state.userId}/thesis/${record.key}`}>{`${record.key}.pdf`}</AuthenticatedLink>]);
                       } else if (info.file.status === 'error') {
                         message.error(`${info.file.name} file upload failed.`);
                       }
@@ -131,7 +131,7 @@ export default function Skripsi() {
                   <Button
                     htmlType="button"
                     type="danger"
-                    onClick={() => fetchAPI(`/student/${userId}/thesis/${record.key}`, { token }, 'DELETE').then(
+                    onClick={() => fetchAPI(`/student/${state.userId}/thesis/${record.key}`, { token: state.token }, 'DELETE').then(
                       () => {
                         setData([...data, data[index].file = 'kosong']);
                       },

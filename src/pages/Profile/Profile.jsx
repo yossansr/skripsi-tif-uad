@@ -5,6 +5,7 @@ import {
 } from 'antd';
 import { useQuery } from 'react-query';
 import fetchAPI from '../../utils/fetchAPI';
+import { UserContext } from '../../contexts/User/UserContext';
 
 const { Title } = Typography;
 
@@ -18,18 +19,17 @@ const tailLayout = {
 };
 
 export default function Profile() {
-  const userId = localStorage.getItem('userId');
-  const token = localStorage.getItem('token');
+  const { state } = React.useContext(UserContext);
   const [form] = Form.useForm();
 
-  const { isLoading: isLoadingStudent, data: student } = useQuery('student', () => fetchAPI(`/student/${userId}`));
+  const { isLoading: isLoadingStudent, data: student } = useQuery('student', () => fetchAPI(`/student/${state.userId}`));
   const { isLoading: isLoadingLecturers, data: lecturers } = useQuery('lecturers', () => fetchAPI('/lecturer'));
-  const { isLoading: isLoadingThesis, data: thesis } = useQuery('thesis', () => fetchAPI(`/student/${userId}/thesis`, { token }));
+  const { isLoading: isLoadingThesis, data: thesis } = useQuery('thesis', () => fetchAPI(`/student/${state.userId}/thesis`, { token: state.token }));
 
   const onFinish = (values) => {
     const thesisMethod = thesis.data ? 'put' : 'post';
 
-    fetchAPI(`/student/${userId}`, { token }, 'PUT', {
+    fetchAPI(`/student/${state.userId}`, { token: state.token }, 'PUT', {
       email: values.email,
       lecturer: {
         id: values.lecturer,
@@ -40,7 +40,7 @@ export default function Profile() {
       'Profile Updated',
     ) : message.error('Profile not updated')));
 
-    fetchAPI(`/student/${userId}/thesis`, { token }, thesisMethod, {
+    fetchAPI(`/student/${state.userId}/thesis`, { token: state.token }, thesisMethod, {
       title: values.title,
     }).then((res) => (res.status === 'ok' ? message.success(
       'Thesis Updated',
